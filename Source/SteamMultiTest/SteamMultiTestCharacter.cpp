@@ -12,6 +12,8 @@
 #include "InputActionValue.h"
 
 #include "MultiplayerSessionsSubsystem.h"
+#include "OnlineSessionSettings.h"
+#include "Interfaces/OnlineSessionInterface.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -107,7 +109,11 @@ void ASteamMultiTestCharacter::CreateSessionThroughSubSystem()
 
 void ASteamMultiTestCharacter::JoinSessionThroughSubSystem()
 {
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->FindSession(1000);
 
+	}
 }
 
 void ASteamMultiTestCharacter::OnCreateSession(bool bwasSuccessFul)
@@ -129,10 +135,40 @@ void ASteamMultiTestCharacter::OnCreateSession(bool bwasSuccessFul)
 
 void ASteamMultiTestCharacter::OnFindSession(const TArray<FOnlineSessionSearchResult>& SessionResult, bool bWasSuccessFul)
 {
+	if (MultiplayerSessionsSubsystem == nullptr) return;
+
+	for (auto Result : SessionResult)
+	{
+		FString SettingString;
+		Result.Session.SessionSettings.Get(FName("MatchType"), SettingString);
+
+		if (SettingString == FString("FreeForAll"))
+		{
+			MultiplayerSessionsSubsystem->JoinSession(Result);
+			return;
+		}
+	}
 }
+
 
 void ASteamMultiTestCharacter::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 {
+	IOnlineSubsystem* OnlineSubSystem = IOnlineSubsystem::Get();
+	if (OnlineSubSystem)
+	{
+		IOnlineSessionPtr SessionInterface = OnlineSubSystem->GetSessionInterface();
+		if (SessionInterface.IsValid())
+		{
+			FString Address;
+			SessionInterface->GetResolvedConnectString(NAME_GameSession ,Address);
+
+			APlayerController* playerController = GetGameInstance()->GetFirstLocalPlayerController();
+			if (playerController)
+			{
+				playerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+			}
+		}
+	}
 }
 
 void ASteamMultiTestCharacter::OnDestroySession(bool bwasSuccessFul)
