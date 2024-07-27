@@ -102,7 +102,7 @@ void ASteamMultiTestCharacter::CreateSessionThroughSubSystem()
 {
 	if (MultiplayerSessionsSubsystem)
 	{
-		MultiplayerSessionsSubsystem->CreateSession(4, FString("FreeForAll"));
+		MultiplayerSessionsSubsystem->CreateSession(1, FString("FreeForAll"));
 
 	}
 }
@@ -119,11 +119,6 @@ void ASteamMultiTestCharacter::JoinSessionThroughSubSystem()
 void ASteamMultiTestCharacter::OnCreateSession(bool bwasSuccessFul)
 {
 	if (!bwasSuccessFul) return;
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(0, 10.f, FColor::Red, FString("OnCreateSession CallBack in Pawn"));
-	}
 
 	UWorld* world = GetWorld();
 
