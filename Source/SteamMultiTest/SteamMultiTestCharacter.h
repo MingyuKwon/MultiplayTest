@@ -65,14 +65,23 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
+
+	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
+
+	void InitializeOnlineSubSystem();
+
 	UFUNCTION(BlueprintCallable)
 	void CreateSessionThroughSubSystem();
-
 	UFUNCTION(BlueprintCallable)
 	void JoinSessionThroughSubSystem();
 
 	UFUNCTION()
 	void OnCreateSession(bool bwasSuccessFul);
+	void OnFindSession(const TArray<FOnlineSessionSearchResult>& SessionResult, bool bWasSuccessFul);
+	void OnJoinSession(EOnJoinSessionCompleteResult::Type Result);
+	void OnDestroySession(bool bwasSuccessFul);
+	void OnStartSession(bool bwasSuccessFul);
+
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -80,9 +89,5 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-
-
-private:
-	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 };
 

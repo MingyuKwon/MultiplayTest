@@ -72,7 +72,12 @@ void ASteamMultiTestCharacter::BeginPlay()
 		}
 	}
 
+	InitializeOnlineSubSystem();
+	
+}
 
+void ASteamMultiTestCharacter::InitializeOnlineSubSystem()
+{
 	UGameInstance* gameInstance = GetGameInstance();
 	if (gameInstance)
 	{
@@ -82,6 +87,12 @@ void ASteamMultiTestCharacter::BeginPlay()
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->MultiPlayerOnCreateSessionComplete.AddDynamic(this, &ThisClass::OnCreateSession);
+		MultiplayerSessionsSubsystem->MultiPlayerOnFindSessionComplete.AddUObject(this, &ThisClass::OnFindSession);
+		MultiplayerSessionsSubsystem->MultiPlayerOnJoinSessionComplete.AddUObject(this, &ThisClass::OnJoinSession);
+		MultiplayerSessionsSubsystem->MultiPlayerOnDestroySessionComplete.AddDynamic(this, &ThisClass::OnDestroySession);
+		MultiplayerSessionsSubsystem->MultiPlayerOnStartSessionComplete.AddDynamic(this, &ThisClass::OnStartSession);
+
+
 	}
 }
 
@@ -114,6 +125,22 @@ void ASteamMultiTestCharacter::OnCreateSession(bool bwasSuccessFul)
 	{
 		world->ServerTravel("/Game/ThirdPerson/Maps/Lobby?listen");
 	}
+}
+
+void ASteamMultiTestCharacter::OnFindSession(const TArray<FOnlineSessionSearchResult>& SessionResult, bool bWasSuccessFul)
+{
+}
+
+void ASteamMultiTestCharacter::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
+{
+}
+
+void ASteamMultiTestCharacter::OnDestroySession(bool bwasSuccessFul)
+{
+}
+
+void ASteamMultiTestCharacter::OnStartSession(bool bwasSuccessFul)
+{
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -12,6 +12,10 @@
  * 
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiPlayerOnCreateSessionComplete, bool, bSuccessful);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FMultiPlayerOnFindSessionComplete, const TArray<FOnlineSessionSearchResult>& SessionResult, bool bWasSuccessFul);
+DECLARE_MULTICAST_DELEGATE_OneParam(FMultiPlayerOnJoinSessionComplete, EOnJoinSessionCompleteResult::Type Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiPlayerOnDestroySessionComplete, bool, bSuccessful);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiPlayerOnStartSessionComplete, bool, bSuccessful);
 
 
 UCLASS()
@@ -29,6 +33,10 @@ public:
 	void StartSession();
 
 	FMultiPlayerOnCreateSessionComplete MultiPlayerOnCreateSessionComplete;
+	FMultiPlayerOnFindSessionComplete MultiPlayerOnFindSessionComplete;
+	FMultiPlayerOnJoinSessionComplete MultiPlayerOnJoinSessionComplete;
+	FMultiPlayerOnDestroySessionComplete MultiPlayerOnDestroySessionComplete;
+	FMultiPlayerOnStartSessionComplete MultiPlayerOnStartSessionComplete;
 protected:
 
 	void OnCreateSessionComplete(FName SessionName, bool bwasSuccessful);
