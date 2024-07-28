@@ -83,7 +83,7 @@ void ASteamMultiTestCharacter::BeginPlay()
 		}
 	}
 
-	//InitializeOnlineSubSystem();
+	InitializeOnlineSubSystem();
 
 }
 
