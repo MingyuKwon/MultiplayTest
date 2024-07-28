@@ -132,22 +132,54 @@ void ASteamMultiTestCharacter::OnFindSession(const TArray<FOnlineSessionSearchRe
 {
 	if (MultiplayerSessionsSubsystem == nullptr) return;
 
-	for (auto Result : SessionResult)
+	if (GEngine)
 	{
-		FString SettingString;
-		Result.Session.SessionSettings.Get(FName("MatchType"), SettingString);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("OnFindSession called. Success: %s, Number of sessions: %d"), bWasSuccessFul ? TEXT("true") : TEXT("false"), SessionResult.Num()));
+	}
 
-		if (SettingString == FString("FreeForAll"))
+	if (bWasSuccessFul)
+	{
+		for (auto Result : SessionResult)
 		{
-			MultiplayerSessionsSubsystem->JoinSession(Result);
-			return;
+			FString SettingString;
+			Result.Session.SessionSettings.Get(FName("MatchType"), SettingString);
+
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Found session with MatchType: %s"), *SettingString));
+			}
+
+			if (SettingString == FString("FreeForAll"))
+			{
+				MultiplayerSessionsSubsystem->JoinSession(Result);
+
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString("Joining FreeForAll session"));
+				}
+
+				return;
+			}
+		}
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString("Failed to find any sessions"));
 		}
 	}
 }
 
 
+
 void ASteamMultiTestCharacter::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("OnJoinSession called with result: %d"), static_cast<int32>(Result)));
+	}
+
 	IOnlineSubsystem* OnlineSubSystem = IOnlineSubsystem::Get();
 	if (OnlineSubSystem)
 	{
@@ -155,16 +187,55 @@ void ASteamMultiTestCharacter::OnJoinSession(EOnJoinSessionCompleteResult::Type 
 		if (SessionInterface.IsValid())
 		{
 			FString Address;
-			SessionInterface->GetResolvedConnectString(NAME_GameSession ,Address);
-
-			APlayerController* playerController = GetGameInstance()->GetFirstLocalPlayerController();
-			if (playerController)
+			if (SessionInterface->GetResolvedConnectString(NAME_GameSession, Address))
 			{
-				playerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Resolved connect string: %s"), *Address));
+				}
+
+				APlayerController* playerController = GetGameInstance()->GetFirstLocalPlayerController();
+				if (playerController)
+				{
+					playerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+					if (GEngine)
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString("ClientTravel initiated successfully"));
+					}
+				}
+				else
+				{
+					if (GEngine)
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString("OnJoinSession failed: playerController is null"));
+					}
+				}
+			}
+			else
+			{
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString("OnJoinSession failed: Unable to get resolved connect string"));
+				}
+			}
+		}
+		else
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString("OnJoinSession failed: SessionInterface is not valid"));
 			}
 		}
 	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString("OnJoinSession failed: OnlineSubSystem is null"));
+		}
+	}
 }
+
 
 void ASteamMultiTestCharacter::OnDestroySession(bool bwasSuccessFul)
 {
