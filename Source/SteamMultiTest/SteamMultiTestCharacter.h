@@ -66,6 +66,30 @@ protected:
 	virtual void BeginPlay();
 
 
+
+	////////////////////////////////////
+	IOnlineSessionPtr OnlineSessionInterface;
+	TSharedPtr<FOnlineSessionSearch> LastSessionSearch;
+
+	UFUNCTION(BlueprintCallable)
+	void CreateGameSession();
+
+	UFUNCTION(BlueprintCallable)
+	void JoinGameSession();
+
+
+	void OnCreateGameSessionComplete(FName SessionName, bool bWasSuccessful);
+	void OnFindGameSessionComplete(bool bWasSuccessful);
+	void OnJoinGameSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+
+
+	FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
+	FOnFindSessionsCompleteDelegate FindSessionsCompleteDelegate;
+	FOnJoinSessionCompleteDelegate JoinSessionCompleteDelegate;
+
+	/////////////////////
+
+
 	class UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
 
 	void InitializeOnlineSubSystem();
