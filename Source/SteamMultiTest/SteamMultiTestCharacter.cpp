@@ -210,7 +210,7 @@ void ASteamMultiTestCharacter::CreateSessionThroughSubSystem()
 {
 	if (MultiplayerSessionsSubsystem)
 	{
-		MultiplayerSessionsSubsystem->CreateSession(4, FString("FreeForAll"));
+		MultiplayerSessionsSubsystem->CreateSession(2, FString("FreeForAll"));
 
 	}
 }
