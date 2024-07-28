@@ -91,6 +91,7 @@ void ASteamMultiTestCharacter::CreateGameSession()
 {
 	if (!OnlineSessionInterface.IsValid()) return;
 
+
 	auto ExistingSession = OnlineSessionInterface->GetNamedSession(NAME_GameSession);
 	if (ExistingSession != nullptr)
 	{
